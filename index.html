@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌈 Scoops & Smiles - Inventory & Management Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font: Quicksand for a friendly, rounded kid-friendly look -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for cute icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Quicksand', 'sans-serif'],
+                    },
+                    colors: {
+                        pastelBlue: '#7BDFF2',
+                        pastelMint: '#B2F7EF',
+                        pastelCream: '#EFF7F6',
+                        pastelPink: '#F7D6E0',
+                        pastelLavender: '#F2B5D4',
+                        pastelYellow: '#FFF1C6',
+                        pastelPeach: '#FFD1DC',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #EFF7F6;
+            color: #4A5568;
+        }
+        .cute-shadow {
+            box-shadow: 0 10px 25px -5px rgba(242, 181, 212, 0.3), 0 8px 10px -6px rgba(123, 223, 242, 0.3);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-4px) scale(1.01);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #EFF7F6;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #F2B5D4;
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col md:flex-row overflow-hidden selection:bg-pastelPink selection:text-gray-700">
+
+    <!-- Sidebar Navigation -->
+    <aside class="w-full md:w-64 bg-white/80 backdrop-blur-md border-r border-pastelPink/50 flex flex-col justify-between p-5 z-20 shadow-sm">
+        <div>
+            <!-- Logo area -->
+            <div class="flex items-center space-x-3 mb-8 px-2">
+                <div class="w-12 h-12 bg-gradient-to-tr from-pastelPink to-pastelBlue rounded-2xl flex items-center justify-center text-2xl shadow-md animate-bounce">
+                    🍦
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg text-gray-700 tracking-wide">Scoops & Smiles</h1>
+                    <p class="text-xs text-pink-400 font-semibold">Magical Inventory AI ✨</p>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="space-y-2">
+                <a href="#" onclick="switchTab('dashboard')" id="nav-dashboard" class="flex items-center space-x-3 px-4 py-3 rounded-2xl font-bold bg-pastelPink/40 text-gray-700 transition-all">
+                    <span class="text-lg">🍧</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" onclick="switchTab('inventory')" id="nav-inventory" class="flex items-center space-x-3 px-4 py-3 rounded-2xl font-semibold text-gray-500 hover:bg-pastelCream hover:text-gray-700 transition-all">
+                    <span class="text-lg">🍓</span>
+                    <span>Inventory & AI</span>
+                </a>
+                <a href="#" onclick="switchTab('orders')" id="nav-orders" class="flex items-center space-x-3 px-4 py-3 rounded-2xl font-semibold text-gray-500 hover:bg-pastelCream hover:text-gray-700 transition-all">
+                    <span class="text-lg">🍨</span>
+                    <span>Orders & Sales</span>
+                </a>
+                <a href="#" onclick="switchTab('suppliers')" id="nav-suppliers" class="flex items-center space-x-3 px-4 py-3 rounded-2xl font-semibold text-gray-500 hover:bg-pastelCream hover:text-gray-700 transition-all">
+                    <span class="text-lg">🚚</span>
+                    <span>Suppliers Hub</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Cute User Profile & Status Card at bottom -->
+        <div class="bg-gradient-to-r from-pastelYellow to-pastelPeach p-4 rounded-2xl cute-shadow mt-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-lg shadow">
+                    🦄
+                </div>
+                <div>
+                    <h2 class="text-xs font-bold text-gray-700">Manager Star</h2>
+                    <span class="inline-block w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                    <span class="text-[10px] text-gray-600 font-semibold">AI Assistant Active</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col h-full overflow-y-auto">
+        <!-- Top Header -->
+        <header class="bg-white/60 backdrop-blur-md px-6 py-4 border-b border-pastelPink/30 flex justify-between items-center sticky top-0 z-10">
+            <div>
+                <h2 id="page-title" class="text-2xl font-bold text-gray-700">🌈 Sweet Shop Dashboard</h2>
+                <p class="text-xs text-gray-500 font-semibold">Real-time inventory predictions & magical automation</p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button onclick="triggerAITestModal()" class="bg-gradient-to-r from-pastelBlue to-pastelLavender hover:opacity-90 text-gray-700 font-bold px-4 py-2.5 rounded-2xl text-sm cute-shadow flex items-center space-x-2 transition-all transform active:scale-95">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span>Test AI Provider Alert</span>
+                </button>
+                <div class="w-10 h-10 bg-pastelPink/50 rounded-2xl flex items-center justify-center text-lg cursor-pointer hover:bg-pastelPink transition-colors">
+                    🔔
+                </div>
+            </div>
+        </header>
+
+        <!-- Dynamic Content Container -->
+        <div class="p-6 md:p-8 space-y-8 max-w-7xl mx-auto w-full">
+
+            <!-- Metrics Overview -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                <!-- Card 1 -->
+                <div class="bg-white p-6 rounded-3xl cute-shadow card-hover border-2 border-pastelPink/40 relative overflow-hidden">
+                    <div class="absolute -right-4 -bottom-4 text-6xl opacity-10">🍦</div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-xs font-bold text-pink-400 uppercase tracking-wider">Total Flavors</p>
+                            <h3 class="text-3xl font-extrabold text-gray-700 mt-1">24</h3>
+                        </div>
+                        <div class="w-12 h-12 bg-pastelPink/40 rounded-2xl flex items-center justify-center text-xl">
+                            🍨
+                        </div>
+                    </div>
+                    <p class="text-xs text-green-500 font-bold mt-4 flex items-center space-x-1">
+                        <i class="fa-solid fa-arrow-trend-up"></i>
+                        <span>+3 new seasonal flavors</span>
+                    </p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="bg-white p-6 rounded-3xl cute-shadow card-hover border-2 border-pastelBlue/40 relative overflow-hidden">
+                    <div class="absolute -right-4 -bottom-4 text-6xl opacity-10">⚠️</div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-xs font-bold text-blue-400 uppercase tracking-wider">Low Stock Warnings</p>
+                            <h3 class="text-3xl font-extrabold text-gray-700 mt-1" id="low-stock-count">2</h3>
+                        </div>
+                        <div class="w-12 h-12 bg-pastelBlue/40 rounded-2xl flex items-center justify-center text-xl">
+                            🚨
+                        </div>
+                    </div>
+                    <p class="text-xs text-orange-400 font-bold mt-4 flex items-center space-x-1">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span>Needs provider attention</span>
+                    </p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="bg-white p-6 rounded-3xl cute-shadow card-hover border-2 border-pastelLavender/40 relative overflow-hidden">
+                    <div class="absolute -right-4 -bottom-4 text-6xl opacity-10">🤖</div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-xs font-bold text-purple-400 uppercase tracking-wider">AI Stock Alerts Sent</p>
+                            <h3 class="text-3xl font-extrabold text-gray-700 mt-1" id="ai-alerts-count">5</h3>
+                        </div>
+                        <div class="w-12 h-12 bg-pastelLavender/40 rounded-2xl flex items-center justify-center text-xl">
+                            🪄
+                        </div>
+                    </div>
+                    <p class="text-xs text-purple-500 font-bold mt-4 flex items-center space-x-1">
+                        <i class="fa-solid fa-robot"></i>
+                        <span>Auto-messages delivered</span>
+                    </p>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="bg-white p-6 rounded-3xl cute-shadow card-hover border-2 border-pastelMint/40 relative overflow-hidden">
+                    <div class="absolute -right-4 -bottom-4 text-6xl opacity-10">🍧</div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-xs font-bold text-teal-500 uppercase tracking-wider">Daily Orders</p>
+                            <h3 class="text-3xl font-extrabold text-gray-700 mt-1">142</h3>
+                        </div>
+                        <div class="w-12 h-12 bg-pastelMint/50 rounded-2xl flex items-center justify-center text-xl">
+                            🎉
+                        </div>
+                    </div>
+                    <p class="text-xs text-green-500 font-bold mt-4 flex items-center space-x-1">
+                        <i class="fa-solid fa-face-smile"></i>
+                        <span>98% Happy Kids Today</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Inventory & AI Stock Predictions Section -->
+            <div class="bg-white rounded-3xl p-6 md:p-8 cute-shadow border-2 border-pastelPink/30">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-700 flex items-center space-x-2">
+                            <span>🔮 Magical Inventory & AI Predictions</span>
+                        </h3>
+                        <p class="text-xs text-gray-500">AI monitors consumption speed and alerts providers before items run out.</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs font-bold bg-pastelCream px-3 py-1.5 rounded-xl text-gray-600 border border-pastelPink/30">Sort by: Urgency</span>
+                        <button onclick="addNewProductModal()" class="bg-pastelPink hover:bg-pastelPink/80 text-gray-700 font-bold px-4 py-2 rounded-xl text-xs cute-shadow transition-all">
+                            <i class="fa-solid fa-plus mr-1"></i> Add Flavor/Item
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Product Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="inventory-grid">
+                    <!-- Cards will be populated dynamically -->
+                </div>
+            </div>
+
+            <!-- AI Automated Provider Communications Log -->
+            <div class="bg-gradient-to-r from-pastelCream to-white rounded-3xl p-6 md:p-8 cute-shadow border-2 border-pastelBlue/30">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold text-gray-700 flex items-center space-x-2">
+                        <span>💌 Automated Provider Dispatch Log</span>
+                    </h3>
+                    <span class="text-xs font-semibold bg-pastelBlue/50 text-gray-600 px-3 py-1 rounded-full">Live WhatsApp / SMS AI Feed</span>
+                </div>
+                <div class="space-y-3" id="dispatch-log">
+                    <div class="bg-white p-4 rounded-2xl border border-pastelBlue/30 flex items-center justify-between shadow-xs">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-pastelMint/50 rounded-xl flex items-center justify-center text-base">🥛</div>
+                            <div>
+                                <h4 class="text-sm font-bold text-gray-700">To: Dairy Farm Milkyway (Provider)</h4>
+                                <p class="text-xs text-gray-500">"Hi! AI predicts Sweet Cream Milk will run out in 14 hours. Automated order placed for 20L."</p>
+                            </div>
+                        </div>
+                        <span class="text-[10px] bg-green-100 text-green-600 font-bold px-2.5 py-1 rounded-full">Sent 12m ago ✨</span>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl border border-pastelBlue/30 flex items-center justify-between shadow-xs">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-pastelPink/50 rounded-xl flex items-center justify-center text-base">🍓</div>
+                            <div>
+                                <h4 class="text-sm font-bold text-gray-700">To: Berry Fresh Farms (Provider)</h4>
+                                <p class="text-xs text-gray-500">"Hi! Strawberry Puree inventory is at 15%. Automated restock order triggered successfully."</p>
+                            </div>
+                        </div>
+                        <span class="text-[10px] bg-green-100 text-green-600 font-bold px-2.5 py-1 rounded-full">Sent 2h ago ✨</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- AI Test Simulator Modal -->
+    <div id="ai-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-3xl p-6 md:p-8 max-w-md w-full cute-shadow border-4 border-pastelPink animate-in fade-in zoom-in duration-200">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-gradient-to-tr from-pastelPink to-pastelBlue rounded-3xl mx-auto flex items-center justify-center text-3xl mb-3 shadow-md animate-bounce">
+                    🪄
+                </div>
+                <h3 class="text-xl font-bold text-gray-700">AI Inventory & Provider Test</h3>
+                <p class="text-xs text-gray-500 mt-1">Simulate an instant stock drop and test the automated WhatsApp message sent to your supplier.</p>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 mb-1">Select Ingredient / Product</label>
+                    <select id="sim-product" class="w-full bg-pastelCream border border-pastelPink rounded-2xl px-4 py-2.5 text-sm font-semibold text-gray-700 focus:outline-none focus:ring-2 focus:ring-pastelPink">
+                        <option value="Rainbow Sprinkles">✨ Rainbow Sprinkles</option>
+                        <option value="Vanilla Bean Pods">🍦 Vanilla Bean Pods</option>
+                        <option value="Choco Fudge Syrup">🍫 Choco Fudge Syrup</option>
+                        <option value="Waffle Cones">🧇 Waffle Cones</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 mb-1">Simulate Stock Level (%)</label>
+                    <input type="range" id="sim-level" min="5" max="30" value="12" class="w-full accent-pink-400 cursor-pointer" oninput="document.getElementById('range-val').innerText = this.value + '%'">
+                    <div class="flex justify-between text-xs font-bold text-gray-400 mt-1">
+                        <span>Critical (5%)</span>
+                        <span id="range-val" class="text-pink-500 font-extrabold">12%</span>
+                        <span>Warning (30%)</span>
+                    </div>
+                </div>
+
+                <div id="sim-preview" class="bg-pastelCream/60 p-4 rounded-2xl border border-pastelPink/30 text-xs text-gray-600 font-medium">
+                    🤖 <span class="font-bold text-gray-700">AI Analysis:</span> Stock is critically low. AI will instantly generate and dispatch a restock message to the preferred provider.
+                </div>
+            </div>
+
+            <div class="flex space-x-3 mt-6">
+                <button onclick="closeAIModal()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold py-3 rounded-2xl text-sm transition-all">
+                    Cancel
+                </button>
+                <button onclick="executeAISimulation()" class="flex-1 bg-gradient-to-r from-pastelPink to-pastelLavender hover:opacity-95 text-gray-700 font-bold py-3 rounded-2xl text-sm cute-shadow transition-all">
+                    Dispatch Alert 🚀
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Sample Inventory Data
+        let inventory = [
+            {
+                id: 1,
+                name: "Unicorn Pink Strawberry Base",
+                category: "Ice Cream Base",
+                stock: 85,
+                unit: "% capacity",
+                status: "Normal",
+                statusColor: "bg-green-100 text-green-600 border-green-200",
+                runOutTime: "In 5 days",
+                icon: "🍓",
+                bgGradient: "from-pastelPink/40 to-pastelPink/10"
+            },
+            {
+                id: 2,
+                name: "Magic Bubblegum Sprinkles",
+                category: "Toppings",
+                stock: 18,
+                unit: "% capacity",
+                status: "Low Stock Alert 🚨",
+                statusColor: "bg-orange-100 text-orange-600 border-orange-200",
+                runOutTime: "In 14 hours",
+                icon: "✨",
+                bgGradient: "from-pastelYellow/50 to-pastelYellow/10"
+            },
+            {
+                id: 3,
+                name: "Crispy Waffle Cones",
+                category: "Cones",
+                stock: 22,
+                unit: "% capacity",
+                status: "Low Stock Alert 🚨",
+                statusColor: "bg-orange-100 text-orange-600 border-orange-200",
+                runOutTime: "In 18 hours",
+                icon: "🧇",
+                bgGradient: "from-pastelPeach/50 to-pastelPeach/10"
+            },
+            {
+                id: 4,
+                name: "Galaxy Mint Chocolate Chip",
+                category: "Ice Cream Base",
+                stock: 64,
+                unit: "% capacity",
+                status: "Normal",
+                statusColor: "bg-green-100 text-green-600 border-green-200",
+                runOutTime: "In 3 days",
+                icon: "🌿",
+                bgGradient: "from-pastelMint/50 to-pastelMint/10"
+            },
+            {
+                id: 5,
+                name: "Marshmallow Cloud Fluff",
+                category: "Toppings",
+                stock: 90,
+                unit: "% capacity",
+                status: "Normal",
+                statusColor: "bg-green-100 text-green-600 border-green-200",
+                runOutTime: "In 7 days",
+                icon: "☁️",
+                bgGradient: "from-pastelBlue/40 to-pastelBlue/10"
+            },
+            {
+                id: 6,
+                name: "Rainbow Sherbet Swirl",
+                category: "Ice Cream Base",
+                stock: 40,
+                unit: "% capacity",
+                status: "Stable",
+                statusColor: "bg-blue-100 text-blue-600 border-blue-200",
+                runOutTime: "In 2 days",
+                icon: "🌈",
+                bgGradient: "from-pastelLavender/50 to-pastelLavender/10"
+            }
+        ];
+
+        // Render Inventory Grid
+        function renderInventory() {
+            const grid = document.getElementById('inventory-grid');
+            grid.innerHTML = '';
+
+            inventory.forEach(item => {
+                const card = document.createElement('div');
+                card.className = `bg-gradient-to-b ${item.bgGradient} rounded-3xl p-6 cute-shadow card-hover border-2 border-white relative flex flex-col justify-between`;
+                
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-2xl shadow-sm">
+                                ${item.icon}
+                            </div>
+                            <span class="text-xs font-bold px-3 py-1 rounded-full border ${item.statusColor}">
+                                ${item.status}
+                            </span>
+                        </div>
+                        <h4 class="font-bold text-gray-700 text-lg">${item.name}</h4>
+                        <p class="text-xs text-gray-500 font-semibold">${item.category}</p>
+
+                        <!-- Stock Progress Bar -->
+                        <div class="mt-4">
+                            <div class="flex justify-between text-xs font-bold text-gray-600 mb-1">
+                                <span>Stock Level</span>
+                                <span class="text-gray-700">${item.stock}%</span>
+                            </div>
+                            <div class="w-full bg-white/80 rounded-full h-3 overflow-hidden p-0.5 shadow-inner">
+                                <div class="bg-gradient-to-r from-pastelPink to-pastelBlue h-full rounded-full transition-all duration-500" style="width: ${item.stock}%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-black/5 flex items-center justify-between">
+                        <div class="flex items-center space-x-1.5 text-xs font-bold text-gray-600">
+                            <i class="fa-solid fa-clock text-pink-400"></i>
+                            <span>Runs out: <span class="text-gray-700">${item.runOutTime}</span></span>
+                        </div>
+                        <button onclick="reorderItem('${item.name}')" class="bg-white hover:bg-pastelPink hover:text-white text-gray-700 font-bold px-3 py-1.5 rounded-xl text-xs shadow-sm transition-all">
+                            Restock 📦
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Tab Switching Logic
+        function switchTab(tabName) {
+            // Update active styles on sidebar links
+            ['dashboard', 'inventory', 'orders', 'suppliers'].forEach(t => {
+                const el = document.getElementById(`nav-${t}`);
+                if (t === tabName) {
+                    el.className = "flex items-center space-x-3 px-4 py-3 rounded-2xl font-bold bg-pastelPink/40 text-gray-700 transition-all shadow-xs";
+                } else {
+                    el.className = "flex items-center space-x-3 px-4 py-3 rounded-2xl font-semibold text-gray-500 hover:bg-pastelCream hover:text-gray-700 transition-all";
+                }
+            });
+
+            // Update Header Title
+            const titles = {
+                dashboard: "🌈 Sweet Shop Dashboard",
+                inventory: "🍓 Magical Inventory & AI Predictions",
+                orders: "🍨 Orders & Sales Feed",
+                suppliers: "🚚 Suppliers Hub & Auto-Connect"
+            };
+            document.getElementById('page-title').innerText = titles[tabName] || "Dashboard";
+        }
+
+        // Modal Controls
+        function triggerAITestModal() {
+            document.getElementById('ai-modal').classList.remove('hidden');
+            document.getElementById('ai-modal').classList.add('flex');
+        }
+
+        function closeAIModal() {
+            document.getElementById('ai-modal').classList.remove('flex');
+            document.getElementById('ai-modal').classList.add('hidden');
+        }
+
+        function executeAISimulation() {
+            const product = document.getElementById('sim-product').value;
+            const level = document.getElementById('sim-level').value;
+
+            // Add new entry to dispatch log
+            const logContainer = document.getElementById('dispatch-log');
+            const newLog = document.createElement('div');
+            newLog.className = "bg-white p-4 rounded-2xl border border-pastelBlue/30 flex items-center justify-between shadow-xs animate-pulse";
+            newLog.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-pastelLavender/50 rounded-xl flex items-center justify-center text-base">🤖</div>
+                    <div>
+                        <h4 class="text-sm font-bold text-gray-700">To: Preferred Supplier Hub</h4>
+                        <p class="text-xs text-gray-500">"🚨 AI Auto-Alert: ${product} dropped to ${level}%. Instant reorder dispatch triggered!"</p>
+                    </div>
+                </div>
+                <span class="text-[10px] bg-pastelPink text-gray-700 font-bold px-2.5 py-1 rounded-full">Just Now ✨</span>
+            `;
+            logContainer.prepend(newLog);
+
+            // Increment AI alerts count in metric card
+            const alertCountEl = document.getElementById('ai-alerts-count');
+            alertCountEl.innerText = parseInt(alertCountEl.innerText) + 1;
+
+            closeAIModal();
+        }
+
+        function reorderItem(itemName) {
+            const logContainer = document.getElementById('dispatch-log');
+            const newLog = document.createElement('div');
+            newLog.className = "bg-white p-4 rounded-2xl border border-pastelPink/30 flex items-center justify-between shadow-xs";
+            newLog.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-pastelPink/40 rounded-xl flex items-center justify-center text-base">💌</div>
+                    <div>
+                        <h4 class="text-sm font-bold text-gray-700">To: Supplier Partner</h4>
+                        <p class="text-xs text-gray-500">"Manual restock request sent for ${itemName}. Delivery expected tomorrow morning!"</p>
+                    </div>
+                </div>
+                <span class="text-[10px] bg-green-100 text-green-600 font-bold px-2.5 py-1 rounded-full">Dispatched ✨</span>
+            `;
+            logContainer.prepend(newLog);
+            alert(`✨ Restock order for "${itemName}" successfully sent to provider via automated dispatch!`);
+        }
+
+        function addNewProductModal() {
+            const name = prompt("Enter new ice cream flavor or ingredient name:");
+            if (name) {
+                inventory.push({
+                    id: inventory.length + 1,
+                    name: name,
+                    category: "Custom Item",
+                    stock: 100,
+                    unit: "% capacity",
+                    status: "Normal",
+                    statusColor: "bg-green-100 text-green-600 border-green-200",
+                    runOutTime: "In 7+ days",
+                    icon: "🍧",
+                    bgGradient: "from-pastelCream to-white"
+                });
+                renderInventory();
+                alert(`🎉 Successfully added "${name}" to the magical inventory!`);
+            }
+        }
+
+        // Initialize on load
+        window.onload = function() {
+            renderInventory();
+        };
+    </script>
+</body>
+</html>
