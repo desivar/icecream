@@ -1,6 +1,7 @@
 🍦 Scoops & Smiles Dashboard & Smart Inventory
-A delightful, kid-friendly ice cream shop management system featuring an aesthetic pastel rainbow interface and an AI-driven inventory automation backend.
+A delightful, kid-friendly ice cream shop management system featuring an aesthetic pastel rainbow interface and an AI-driven inventory automation backend. Just the dasboard for now.
 ![Portfolio Screenshot](https://github.com/desivar/icecream/blob/main/images/icecream.png) 
+
 
 ✨ Features
 🎨 Aesthetic Pastel Dashboard: Designed with a cheerful "pastel rainbow" color scheme and smooth micro-interactions tailored for an engaging experience.
